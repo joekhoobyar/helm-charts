@@ -1,6 +1,13 @@
 # terraform-operator
 
-A Helm chart to deploy the terraform-operator-controller and CRD.
+A Helm chart to deploy the terraform-operator Controller and CRD.
+
+## TL;DR;
+
+```console
+$ helm repo add isaaguilar https://isaaguilar.github.io/helm-charts
+$ helm install isaaguilar/terraform-operator --namespace tf-system
+```
 
 ## Upgrading the Custom Resource Definition
 
@@ -20,7 +27,7 @@ kubectl apply -f crds/terraform.yaml
 | controller.environmentVars | `object` key/value envs | `{}` |
 | controller.image.pullPolicy | `string`  Set how kubernetes determines when to pull the docker image. | `"Always"` |
 | controller.image.repository | `string` repo name without the tag | `"isaaguilar/terraform-operator"` |
-| controller.image.tag | `string` tag of the image | `"v0.1.2"` |
+| controller.image.tag | `string` tag of the image | `"v0.2.0-beta.1"` |
 | controller.nodeSelector | `object` node labels for pod assignment | `{}` |
 | controller.replicaCount | `int` number of replicas | `1` |
 | controller.resources | `object` CPU/Memory request and limit configuration | `{}` |

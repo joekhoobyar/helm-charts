@@ -1,0 +1,19 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+## TL;DR;
+
+```console
+$ helm repo add isaaguilar https://isaaguilar.github.io/helm-charts
+$ helm install isaaguilar/terraform-operator --namespace tf-system
+```
+
+## Upgrading the Custom Resource Definition
+
+Helm does not have support at this time for upgrading or deleting CRDs. Instead, update CRDs manually by running
+
+```
+kubectl apply -f crds/terraform.yaml
+```
+
+{{ template "chart.valuesSection" . }}

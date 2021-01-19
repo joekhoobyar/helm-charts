@@ -12,7 +12,7 @@ controller:
     # controller.image.repository -- repo name without the tag
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
-    tag: v0.3.0
+    tag: v0.3.1
     # controller.image.pullPolicy --  Set how kubernetes determines when
     # to pull the docker image.
     pullPolicy: Always
@@ -24,13 +24,14 @@ controller:
   - --zap-encoder=console
 
   # controller.resources -- CPU/Memory request and limit configuration
-  resources: {}
-    # limits:
-    #   cpu: 50m
-    #   memory: 128M
-    # requests:
-    #   cpu: 25m
-    #   memory: 64M
+  # @default -- <a href="values.yaml#L28-L34">values.yaml</a>
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128M
+    requests:
+      cpu: 25m
+      memory: 64M
 
   # controller.environmentVars -- key/value envs
   environmentVars: {}

@@ -27,7 +27,7 @@ kubectl apply -f crds/terraform.yaml
 | controller.environmentVars | `object` key/value envs | `{}` |
 | controller.image.pullPolicy | `string`  Set how kubernetes determines when to pull the docker image. | `"Always"` |
 | controller.image.repository | `string` repo name without the tag | `"isaaguilar/terraform-operator"` |
-| controller.image.tag | `string` tag of the image | `"v0.3.4"` |
+| controller.image.tag | `string` tag of the image | `"v0.3.5"` |
 | controller.nodeSelector | `object` node labels for pod assignment | `{}` |
 | controller.replicaCount | `int` number of replicas | `1` |
 | controller.resources | `object` CPU/Memory request and limit configuration | <a href="values.yaml#L28-L34">values.yaml</a> |

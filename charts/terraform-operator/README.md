@@ -1,6 +1,6 @@
 # terraform-operator
 
-![Version: v0.1.17](https://img.shields.io/badge/Version-v0.1.17-informational?style=flat-square) ![AppVersion: v0.3.10](https://img.shields.io/badge/AppVersion-v0.3.10-informational?style=flat-square)
+![Version: v0.2.0](https://img.shields.io/badge/Version-v0.2.0-informational?style=flat-square) ![AppVersion: v0.5.0](https://img.shields.io/badge/AppVersion-v0.5.0-informational?style=flat-square)
 
 A Helm chart to deploy the terraform-operator Controller and CRD.
 
@@ -27,9 +27,9 @@ kubectl apply -f crds/terraform.yaml
 | controller.args | `list` additional arguments for the command | <a href="values.yaml#L22-L24">values.yaml</a> |
 | controller.enabled | `bool` deploy the terraform-operator controller | `true` |
 | controller.environmentVars | `object` key/value envs | `{}` |
-| controller.image.pullPolicy | `string`  Set how kubernetes determines when to pull the docker image. | `"Always"` |
+| controller.image.pullPolicy | `string`  Set how kubernetes determines when to pull the docker image. | `"IfNotPresent"` |
 | controller.image.repository | `string` repo name without the tag | `"isaaguilar/terraform-operator"` |
-| controller.image.tag | `string` tag of the image | `"v0.3.10"` |
+| controller.image.tag | `string` tag of the image | `"v0.5.0"` |
 | controller.nodeSelector | `object` node labels for pod assignment | `{}` |
 | controller.replicaCount | `int` number of replicas | `1` |
 | controller.resources | `object` CPU/Memory request and limit configuration | <a href="values.yaml#L28-L34">values.yaml</a> |

@@ -12,16 +12,19 @@ controller:
     # controller.image.repository -- repo name without the tag
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
-    tag: v0.3.10
+    tag: v0.5.0
     # controller.image.pullPolicy --  Set how kubernetes determines when
     # to pull the docker image.
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   # controller.args -- additional arguments for the command
   # @default -- <a href="values.yaml#L22-L24">values.yaml</a>
   args:
   - --zap-log-level=debug
   - --zap-encoder=console
+  ## Uncomment the following to allow the controller to create multiple threads
+  ## when workflow pods get queued.
+  # - --max-concurrent-reconciles=10
 
   # controller.resources -- CPU/Memory request and limit configuration
   # @default -- <a href="values.yaml#L28-L34">values.yaml</a>

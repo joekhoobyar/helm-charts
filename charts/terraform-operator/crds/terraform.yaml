@@ -42,21 +42,6 @@ spec:
         spec:
           description: TerraformSpec defines the desired state of Terraform
           properties:
-            applyOnCreate:
-              description: ApplyOnCreate is used to apply any planned changes when
-                the resource is first created. Omitting this or setting it to false
-                will resort to on demand apply. Defaults to false.
-              type: boolean
-            applyOnDelete:
-              description: ApplyOnDelete is used to apply the destroy plan when the
-                terraform resource is being deleted. Omitting this or setting it to
-                false will require "on-demand" apply. Defaults to false.
-              type: boolean
-            applyOnUpdate:
-              description: ApplyOnUpdate is used to apply any planned changes when
-                the resource is updated. Omitting this or setting it to false will
-                resort to on demand apply. Defaults to false.
-              type: boolean
             credentials:
               description: Credentials is an array of credentials generally used for
                 Terraform providers
@@ -129,6 +114,9 @@ spec:
                 be used.
               type: string
             env:
+              description: Env is used to define a common set of environment variables
+                into the workflow runners. The `TF_VAR_` prefix will also be used
+                by the `exportRepo` option.
               items:
                 description: EnvVar represents an environment variable present in
                   a Container.
@@ -247,27 +235,67 @@ spec:
                   type: string
               required:
               - address
-              - tfvarsFile
               type: object
             ignoreDelete:
               description: IgnoreDelete will bypass the finalization process and remove
                 the tf resource without running any delete jobs.
               type: boolean
-            postrunScript:
-              description: "PostrunScript lets the user define a script that will
+            keepCompletedPods:
+              description: KeepCompletedPods when true will keep completed pods. Default
+                is false and completed pods are removed.
+              type: boolean
+            outputsSecret:
+              description: OutputsSecret will create a secret with the outputs from
+                the module. All outputs from the module will be written to the secret
+                unless the user defines "outputsToInclude" or "outputsToOmit".
+              type: string
+            outputsToInclude:
+              description: OutputsToInclude is a whitelist of outputs to write when
+                writing the outputs to kubernetes.
+              items:
+                type: string
+              type: array
+            outputsToOmit:
+              description: OutputsToOmit is a blacklist of outputs to omit when writing
+                the outputs to kubernetes.
+              items:
+                type: string
+              type: array
+            postApplyDeleteScript:
+              type: string
+            postApplyScript:
+              description: "PostApplyScript lets the user define a script that will
                 run after terraform commands are executed on the terraform-execution
                 pod. The pod will have already set up cloudProfile (eg cloud credentials)
                 so the script can make use of it. \n Setting this field will create
                 a key in the tfvars configmap called \"postrun.sh\". This means the
                 user can alternatively pass in a posterun.sh file via config \"Sources\"."
               type: string
-            prerunScript:
-              description: "PrerunScript lets the user define a script that will run
-                before terraform commands are executed on the terraform-execution
+            postInitDeleteScript:
+              type: string
+            postInitScript:
+              type: string
+            postPlanDeleteScript:
+              type: string
+            postPlanScript:
+              type: string
+            preApplyDeleteScript:
+              type: string
+            preApplyScript:
+              type: string
+            preInitDeleteScript:
+              type: string
+            preInitScript:
+              description: "PreInitScript lets the user define a script that will
+                run before terraform commands are executed on the terraform-execution
                 pod. The pod will have already set up cloudProfile (eg cloud credentials)
                 so the script can make use of it. \n Setting this field will create
                 a key in the tfvars configmap called \"prerun.sh\". This means the
                 user can also pass in a prerun.sh file via config \"Sources\"."
+              type: string
+            prePlanDeleteScript:
+              type: string
+            prePlanScript:
               type: string
             reconcile:
               description: Reconcile are the settings used for auto-reconciliation
@@ -284,20 +312,96 @@ spec:
               required:
               - enable
               type: object
+            resourceDownloads:
+              description: ResourceDownloads defines other files to download into
+                the module directory that can be used by the terraform workflow runners.
+                The `tfvar` type will also be fetched by the `exportRepo` option (if
+                defined) to aggregate the set of tfvars to save to an scm system.
+              items:
+                description: 'ResourceDownload (formerly SrcOpts) defines a resource
+                  to fetch using one of the configured protocols: ssh|http|https (eg
+                  git::SSH or git::HTTPS)'
+                properties:
+                  address:
+                    description: Address defines the source address resources to fetch.
+                    type: string
+                  path:
+                    description: Path will download the resources into this path which
+                      is relative to the main module directory.
+                    type: string
+                  useAsVar:
+                    description: UseAsVar will add the file as a tfvar via the -var-file
+                      flag of the terraform plan command. The downloaded resource
+                      must not be a directory.
+                    type: boolean
+                required:
+                - address
+                type: object
+              type: array
             runnerAnnotations:
               additionalProperties:
                 type: string
               description: RunnerAnnotations are annotations that will be added to
                 all runner pods.
               type: object
+            runnerRules:
+              description: RunnerRules are RBAC rules that will be added to all runner
+                pods.
+              items:
+                description: PolicyRule holds information that describes a policy
+                  rule, but does not contain information about who the rule applies
+                  to or which namespace the rule applies to.
+                properties:
+                  apiGroups:
+                    description: APIGroups is the name of the APIGroup that contains
+                      the resources.  If multiple API groups are specified, any action
+                      requested against one of the enumerated resources in any API
+                      group will be allowed.
+                    items:
+                      type: string
+                    type: array
+                  nonResourceURLs:
+                    description: NonResourceURLs is a set of partial urls that a user
+                      should have access to.  *s are allowed, but only as the full,
+                      final step in the path Since non-resource URLs are not namespaced,
+                      this field is only applicable for ClusterRoles referenced from
+                      a ClusterRoleBinding. Rules can either apply to API resources
+                      (such as "pods" or "secrets") or non-resource URL paths (such
+                      as "/api"),  but not both.
+                    items:
+                      type: string
+                    type: array
+                  resourceNames:
+                    description: ResourceNames is an optional white list of names
+                      that the rule applies to.  An empty set means that everything
+                      is allowed.
+                    items:
+                      type: string
+                    type: array
+                  resources:
+                    description: Resources is a list of resources this rule applies
+                      to.  ResourceAll represents all resources.
+                    items:
+                      type: string
+                    type: array
+                  verbs:
+                    description: Verbs is a list of Verbs that apply to ALL the ResourceKinds
+                      and AttributeRestrictions contained in this rule.  VerbAll represents
+                      all kinds.
+                    items:
+                      type: string
+                    type: array
+                required:
+                - verbs
+                type: object
+              type: array
             scmAuthMethods:
               description: SCMAuthMethods define multiple SCMs that require tokens/keys
               items:
                 description: SCMAuthMethod definition of SCMs that require tokens/keys
                 properties:
                   git:
-                    description: SCM define the SCM for a host which is defined at
-                      a higher-level
+                    description: Git configuration options for auth methods of git
                     properties:
                       https:
                         description: GitHTTPS configures the setup for git over https
@@ -361,33 +465,65 @@ spec:
                 - host
                 type: object
               type: array
+            scriptRunner:
+              type: string
+            scriptRunnerExecutionScriptConfigMap:
+              description: ScriptRunnerExecutionScriptConfigMap allows the user to
+                define a custom terraform runner script that gets executed instead
+                of the default script built into the runner image. The configmap "name"
+                and "key" are required.
+              properties:
+                key:
+                  description: The key to select.
+                  type: string
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+                optional:
+                  description: Specify whether the ConfigMap or its key must be defined
+                  type: boolean
+              required:
+              - key
+              type: object
+            scriptRunnerPullPolicy:
+              description: PullPolicy describes a policy for if/when to pull a container
+                image
+              type: string
+            scriptRunnerVersion:
+              type: string
             serviceAccount:
               description: ServiceAccount use a specific kubernetes ServiceAccount
                 for running the create + destroy pods. If not specified we create
                 a new ServiceAccount per Terraform
               type: string
-            sources:
-              items:
-                description: SrcOpts defines a terraform source location (eg git::SSH
-                  or git::HTTPS)
-                properties:
-                  address:
-                    description: Address defines the source address of the tf resources.
-                      This this var will try to accept any format defined in https://www.terraform.io/docs/modules/sources.html
-                      When downloading `tfvars`, the double slash `//` syntax is used
-                      to define dir or tfvar files. This can be used multiple times
-                      for multiple items.
-                    type: string
-                  extras:
-                    description: Extras will allow for giving the controller specific
-                      instructions for fetching files from the address.
-                    items:
-                      type: string
-                    type: array
-                required:
-                - address
-                type: object
-              type: array
+            setupRunner:
+              type: string
+            setupRunnerExecutionScriptConfigMap:
+              description: SetupRunnerExecutionScriptConfigMap allows the user to
+                define a custom terraform runner script that gets executed instead
+                of the default script built into the runner image. The configmap "name"
+                and "key" are required.
+              properties:
+                key:
+                  description: The key to select.
+                  type: string
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+                optional:
+                  description: Specify whether the ConfigMap or its key must be defined
+                  type: boolean
+              required:
+              - key
+              type: object
+            setupRunnerPullPolicy:
+              description: PullPolicy describes a policy for if/when to pull a container
+                image
+              type: string
+            setupRunnerVersion:
+              type: string
             sshTunnel:
               description: SSHTunnel can be defined for pulling from scm sources that
                 cannot be accessed by the network the operator/runner runs in. An
@@ -418,31 +554,53 @@ spec:
               - sshKeySecretRef
               type: object
             terraformModule:
-              description: TerraformModule is the terraform module scm address. Currently
-                supports git protocol over SSH or HTTPS
+              description: "TerraformModule is the terraform module scm address. Currently
+                supports git protocol over SSH or HTTPS. \n Precedence of \"terraformModule*\"
+                to use as the main module is determined by the setup runner. See the
+                runners/setup.sh for the module configuration."
+              type: string
+            terraformModuleConfigMap:
+              description: TerraformModuleConfigMap is the configMap that contains
+                terraform module resources. The module will be fetched by the setup
+                runner. In order for terraform to understand it's a module reosurce,
+                the configmap keys must end in `.tf` or `.tf.json`.
               properties:
-                address:
-                  description: Address defines the source address of the tf resources.
-                    This this var will try to accept any format defined in https://www.terraform.io/docs/modules/sources.html
-                    When downloading `tfvars`, the double slash `//` syntax is used
-                    to define dir or tfvar files. This can be used multiple times
-                    for multiple items.
+                key:
                   type: string
-                extras:
-                  description: Extras will allow for giving the controller specific
-                    instructions for fetching files from the address.
-                  items:
-                    type: string
-                  type: array
+                name:
+                  type: string
               required:
-              - address
+              - name
               type: object
+            terraformModuleInline:
+              description: TerraformModuleInline is an incline terraform module definition.
+                The contents of the inline definition will be used to create `inline-module.tf`
+              type: string
             terraformRunner:
               description: TerraformRunner gives the user the ability to inject their
                 own container image to execute terraform. This is very helpful for
                 users who need to have a certain toolset installed on their images,
                 or who can't pull public images, such as the default image "isaaguilar/tfops".
               type: string
+            terraformRunnerExecutionScriptConfigMap:
+              description: TerraformRunnerExecutionScriptConfigMap allows the user
+                to define a custom terraform runner script that gets executed instead
+                of the default script built into the runner image. The configmap "name"
+                and "key" are required.
+              properties:
+                key:
+                  description: The key to select.
+                  type: string
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+                optional:
+                  description: Specify whether the ConfigMap or its key must be defined
+                  type: boolean
+              required:
+              - key
+              type: object
             terraformRunnerPullPolicy:
               description: TerraformRunnerPullPolicy describes a policy for if/when
                 to pull the TerraformRunner image. Acceptable values are "Always",
@@ -452,24 +610,68 @@ spec:
               description: TerraformVersion helps the operator decide which image
                 tag to pull for the terraform runner. Defaults to "0.11.14"
               type: string
-          required:
-          - terraformModule
+            writeOutputsToStatus:
+              description: WriteOutputsToStatus will add the outputs from the module
+                to the status of the Terraform CustomResource.
+              type: boolean
           type: object
         status:
           description: TerraformStatus defines the observed state of Terraform
           properties:
-            lastGeneration:
+            exported:
+              type: string
+            lastCompletedGeneration:
               format: int64
               type: integer
+            outputs:
+              additionalProperties:
+                type: string
+              type: object
             phase:
-              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                of cluster Important: Run "operator-sdk generate k8s" to regenerate
-                code after modifying this file Add custom validation using kubebuilder
-                tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
               type: string
+            podNamePrefix:
+              description: PodNamePrefix is used to identify this installation of
+                the resource. For very long resource names, like those greater than
+                220 characters, the prefix ensures resource uniqueness for runners
+                and other resources used by the runner. Another case for the pod name
+                prefix is when rapidly deleteing a resource and recreating it, the
+                chance of recycling existing resources is reduced to virtually nil.
+              type: string
+            stages:
+              items:
+                properties:
+                  generation:
+                    format: int64
+                    type: integer
+                  interruptible:
+                    description: Interruptible is set to false when the pod should
+                      not be terminated such as when doing a terraform apply
+                    type: boolean
+                  podType:
+                    type: string
+                  reason:
+                    type: string
+                  startTime:
+                    format: date-time
+                    type: string
+                  state:
+                    type: string
+                  stopTime:
+                    format: date-time
+                    type: string
+                required:
+                - generation
+                - interruptible
+                - podType
+                - reason
+                - state
+                type: object
+              type: array
           required:
-          - lastGeneration
+          - lastCompletedGeneration
           - phase
+          - podNamePrefix
+          - stages
           type: object
       type: object
   version: v1alpha1

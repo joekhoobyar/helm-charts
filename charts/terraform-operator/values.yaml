@@ -12,7 +12,7 @@ controller:
     # controller.image.repository -- repo name without the tag
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
-    tag: v0.5.0
+    tag: v0.5.1
     # controller.image.pullPolicy --  Set how kubernetes determines when
     # to pull the docker image.
     pullPolicy: IfNotPresent

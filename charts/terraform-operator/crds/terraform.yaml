@@ -42,6 +42,10 @@ spec:
           spec:
             description: TerraformSpec defines the desired state of Terraform
             properties:
+              cleanupDisk:
+                description: CleanupDisk will clear out previous terraform run data
+                  from the persistent volume.
+                type: boolean
               credentials:
                 description: Credentials is an array of credentials generally used
                   for Terraform providers
@@ -230,6 +234,20 @@ spec:
                     description: ConfFile is the full path relative to the root of
                       the repo
                     type: string
+                  gitEmail:
+                    description: GitEmail is the email of the user who pushes to git.
+                      This email is typically an automation user and probably the
+                      user whose token or sshkey is configured in scmAuthMethod
+                    type: string
+                  gitUsername:
+                    description: GitUsername is the name of the user who pushes to
+                      git. This name is typically an automation user and probably
+                      the user whose token or sshkey is configured in scmAuthMethod
+                    type: string
+                  retryOnFailure:
+                    description: RetryOnFailure sets the export pod's restartPolicy
+                      to "OnFailure"
+                    type: boolean
                   tfvarsFile:
                     description: TFVarsFile is the full path relative to the root
                       of the repo
@@ -262,6 +280,15 @@ spec:
                 items:
                   type: string
                 type: array
+              persistentVolumeSize:
+                anyOf:
+                - type: integer
+                - type: string
+                description: PersistentVolumeSize define the size of the disk used
+                  to store terraform run data. If not defined, a default of "2Gi"
+                  is used.
+                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                x-kubernetes-int-or-string: true
               postApplyDeleteScript:
                 type: string
               postApplyScript:

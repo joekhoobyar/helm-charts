@@ -29,6 +29,22 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
+      initContainers:
+      {{- if .Values.webhook.enabled }}
+      - name: gencert
+        image: "isaaguilar/terraform-operator-gencert:v1.0.0"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVICE
+          value: {{ .Release.Name }}-webhook
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: SECRET
+          value: {{ .Release.Name }}-selfsigned
+      {{- end}}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
@@ -38,6 +54,9 @@ spec:
         args:
         {{- range .Values.controller.args }}
         - {{ . }}
+        {{- end }}
+        {{- if not .Values.webhook.enabled }}
+        - --disable-conversion-webhook
         {{- end }}
         env:
         - name: WATCH_NAMESPACE # Leave blank to watch all namespaces
@@ -56,6 +75,23 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        ports:
+        - name: https
+          containerPort: 9443
+          protocol: TCP
+        volumeMounts:
+        {{- if .Values.webhook.enabled }}
+        - name: certs
+          mountPath: /tmp/k8s-webhook-server/serving-certs
+          readOnly: true
+        {{- end }}
+      volumes:
+      {{- if .Values.webhook.enabled }}
+      - name: certs
+        secret:
+          secretName: {{ .Release.Name }}-selfsigned
+          optional: true
+      {{- end }}
       {{- with .Values.controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

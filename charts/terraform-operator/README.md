@@ -1,6 +1,6 @@
 # terraform-operator
 
-![Version: v0.2.11](https://img.shields.io/badge/Version-v0.2.11-informational?style=flat-square) ![AppVersion: v0.8.5](https://img.shields.io/badge/AppVersion-v0.8.5-informational?style=flat-square)
+![Version: v0.2.12](https://img.shields.io/badge/Version-v0.2.12-informational?style=flat-square) ![AppVersion: v0.9.0-pre1](https://img.shields.io/badge/AppVersion-v0.9.0--pre1-informational?style=flat-square)
 
 A Helm chart to deploy the terraform-operator Controller and CRD.
 
@@ -27,10 +27,11 @@ kubectl apply -f crds/terraform.yaml
 | controller.args | `list` additional arguments for the command | <a href="values.yaml#L22-L24">values.yaml</a> |
 | controller.enabled | `bool` deploy the terraform-operator controller | `true` |
 | controller.environmentVars | `object` key/value envs | `{}` |
-| controller.image.pullPolicy | `string`  Set how kubernetes determines when to pull the docker image. | `"IfNotPresent"` |
-| controller.image.repository | `string` repo name without the tag | `"isaaguilar/terraform-operator"` |
-| controller.image.tag | `string` tag of the image | `"v0.8.5"` |
+| controller.image.pullPolicy | `string` Set how kubernetes determines when to pull the docker image. | `"IfNotPresent"` |
+| controller.image.repository | `string` repo name without the tag. The init container shares the name and appends `-gencert`. | `"isaaguilar/terraform-operator"` |
+| controller.image.tag | `string` tag of the image | `"v0.9.0-pre1"` |
 | controller.nodeSelector | `object` node labels for pod assignment | `{}` |
 | controller.replicaCount | `int` number of replicas | `1` |
 | controller.resources | `object` CPU/Memory request and limit configuration | <a href="values.yaml#L28-L34">values.yaml</a> |
 | controller.tolerations | `list` List of node taints to tolerate | `[]` |
+| webhook.enabled | `bool` enables the webhook - required most of the time | `true` |

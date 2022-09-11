@@ -9,11 +9,12 @@ controller:
   replicaCount: 1
 
   image:
-    # controller.image.repository -- repo name without the tag
+    # controller.image.repository -- repo name without the tag. The init container shares the name
+    # and appends `-gencert`.
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
-    tag: v0.8.5
-    # controller.image.pullPolicy --  Set how kubernetes determines when
+    tag: v0.9.0-pre1
+    # controller.image.pullPolicy -- Set how kubernetes determines when
     # to pull the docker image.
     pullPolicy: IfNotPresent
 
@@ -49,4 +50,7 @@ controller:
   # controller.affinity -- node/pod affinities
   affinity: {}
 
-
+# - webhooks options
+webhook:
+  # -- enables the webhook - required most of the time
+  enabled: true

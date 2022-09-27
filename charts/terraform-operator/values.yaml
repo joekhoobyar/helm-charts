@@ -13,7 +13,7 @@ controller:
     # and appends `-gencert`.
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
-    tag: v0.9.0-pre2
+    tag: v0.9.0-pre3
     # controller.image.pullPolicy -- Set how kubernetes determines when
     # to pull the docker image.
     pullPolicy: IfNotPresent

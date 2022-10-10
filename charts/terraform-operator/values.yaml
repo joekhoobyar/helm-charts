@@ -39,6 +39,10 @@ controller:
   # controller.environmentVars -- key/value envs
   environmentVars: {}
 
+  # -- Env defined like k8s EnvFrom https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#envvar-v1-core.
+  # Accepts `tpl` values.
+  env: []
+
   # controller.nodeSelector -- node labels for pod assignment
   nodeSelector: {}
 

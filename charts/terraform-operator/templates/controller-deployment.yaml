@@ -1,4 +1,5 @@
 {{- if .Values.controller.enabled -}}
+{{- $root := . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,6 +71,9 @@ spec:
         {{- range $key, $value := .Values.controller.environment_vars }}
         - name: {{ $key }}
           value: "{{ $value }}"
+        {{- end }}
+        {{- with .Values.controller.env }}
+        {{- tpl (toYaml .) $root  | nindent 8 }}
         {{- end }}
         {{- with .Values.controller.resources }}
         resources:

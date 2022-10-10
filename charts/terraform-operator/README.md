@@ -1,6 +1,6 @@
 # terraform-operator
 
-![Version: 0.2.16](https://img.shields.io/badge/Version-0.2.16-informational?style=flat-square) ![AppVersion: v0.9.0-pre4](https://img.shields.io/badge/AppVersion-v0.9.0--pre4-informational?style=flat-square)
+![Version: 0.2.17](https://img.shields.io/badge/Version-0.2.17-informational?style=flat-square) ![AppVersion: v0.9.0-pre4](https://img.shields.io/badge/AppVersion-v0.9.0--pre4-informational?style=flat-square)
 
 A Helm chart to deploy the terraform-operator Controller and CRD.
 
@@ -24,14 +24,14 @@ kubectl apply -f crds/terraform.yaml
 | Key | Description | Default |
 |---|---|---|
 | controller.affinity | `object` node/pod affinities | `{}` |
-| controller.args | `list` additional arguments for the command | <a href="values.yaml#L23-L25">values.yaml</a> |
+| controller.args | `list` additional arguments for the command | <a href="values.yaml#L22-L24">values.yaml</a> |
 | controller.enabled | `bool` deploy the terraform-operator controller | `true` |
 | controller.environmentVars | `object` key/value envs | `{}` |
 | controller.image.pullPolicy | `string` Set how kubernetes determines when to pull the docker image. | `"IfNotPresent"` |
-| controller.image.repository | `string` repo name without the tag. The init container shares the name and appends `-gencert`. | `"isaaguilar/terraform-operator"` |
+| controller.image.repository | `string` image without the tag. | `"isaaguilar/terraform-operator"` |
 | controller.image.tag | `string` tag of the image | `"v0.9.0-pre4"` |
 | controller.nodeSelector | `object` node labels for pod assignment | `{}` |
 | controller.replicaCount | `int` number of replicas | `1` |
-| controller.resources | `object` CPU/Memory request and limit configuration | <a href="values.yaml#L32-L38">values.yaml</a> |
+| controller.resources | `object` CPU/Memory request and limit configuration | <a href="values.yaml#L31-L37">values.yaml</a> |
 | controller.tolerations | `list` List of node taints to tolerate | `[]` |
 | webhook.enabled | `bool` enables the webhook - required most of the time | `true` |

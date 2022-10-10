@@ -9,8 +9,7 @@ controller:
   replicaCount: 1
 
   image:
-    # controller.image.repository -- repo name without the tag. The init container shares the name
-    # and appends `-gencert`.
+    # controller.image.repository -- image without the tag.
     repository: isaaguilar/terraform-operator
     # controller.image.tag -- tag of the image
     tag: v0.9.0-pre4
@@ -19,7 +18,7 @@ controller:
     pullPolicy: IfNotPresent
 
   # controller.args -- additional arguments for the command
-  # @default -- <a href="values.yaml#L23-L25">values.yaml</a>
+  # @default -- <a href="values.yaml#L22-L24">values.yaml</a>
   args:
   - --zap-log-level=debug
   - --zap-encoder=console
@@ -28,7 +27,7 @@ controller:
   # - --max-concurrent-reconciles=10
 
   # controller.resources -- CPU/Memory request and limit configuration
-  # @default -- <a href="values.yaml#L32-L38">values.yaml</a>
+  # @default -- <a href="values.yaml#L31-L37">values.yaml</a>
   resources:
     limits:
       cpu: 50m

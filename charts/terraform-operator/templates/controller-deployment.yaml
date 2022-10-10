@@ -32,7 +32,7 @@ spec:
       initContainers:
       {{- if .Values.webhook.enabled }}
       - name: gencert
-        image: "isaaguilar/terraform-operator-gencert:v1.0.0"
+        image: "ghcr.io/galleybytes/terraform-operator-gencert:1.0.0"
         imagePullPolicy: IfNotPresent
         env:
         - name: SERVICE

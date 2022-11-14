@@ -36,6 +36,12 @@ controller:
       cpu: 25m
       memory: 64M
 
+  # set default security context
+  securityContext:
+    runAsNonRoot: true
+    # This can be set to null for use on openshift 
+    runAsUser: 1001
+  
   # controller.environmentVars -- key/value envs
   environmentVars: {}
 

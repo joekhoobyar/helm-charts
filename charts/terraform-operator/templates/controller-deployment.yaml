@@ -27,9 +27,10 @@ spec:
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Release.Name }}
+      {{- with .Values.controller.securityContext }}
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
       {{- if .Values.webhook.enabled }}
       - name: gencert
